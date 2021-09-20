@@ -1,0 +1,131 @@
+# square loss
+loss.ftn = function(x,mu){
+  fx = (x-mu)^2 # square loss
+  return(fx)
+}
+
+loss.ftn(1,0)
+loss.ftn(c(1,3,4),0) #여러 x값도 가능
+loss.ftn(1,c(0,1)) #여러 mu값도 가능
+loss.ftn(c(1,3,4),c(0,1)) #결과값을 보고 확인 잘해야함.
+
+curve(loss.ftn(1,x),xlim=c(-5,10)) #(1-mu)^2의 그래프
+curve(loss.ftn(3,x),add=T,col="blue") 
+curve(loss.ftn(4,x),add=T,col="green") 
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #경험적위험함수
+
+
+#absolute loss
+loss.ftn = function(x,mu){
+  fx = abs(x-mu)
+  return(fx)
+}
+
+curve(loss.ftn(1,x),xlim=c(-5,10)) 
+curve(loss.ftn(3,x),add=T,col="blue") 
+curve(loss.ftn(4,x),add=T,col="green") 
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #경험적위험함수
+
+
+#quantile loss
+loss.ftn = function(x,mu){
+  gamma = 0.9
+  fx = (1-gamma)*abs(x-mu)*(x<mu)+gamma*(x-mu)*(x>mu)
+  return(fx)
+}
+
+curve(loss.ftn(1,x),xlim=c(-5,10)) 
+curve(loss.ftn(3,x),add=T,col="blue") 
+curve(loss.ftn(4,x),add=T,col="green") 
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #경험적위험함수
+
+
+
+#huber loss
+loss.ftn = function(x,mu){
+  delta = 1
+  fx = (x-mu)^2*(abs(x-mu)<=delta) + (2*delta*abs(x-mu)-delta^2)*(abs(x-mu)>delta)
+  return(fx)
+}
+
+curve(loss.ftn(1,x),xlim=c(-5,10)) 
+curve(loss.ftn(3,x),add=T,col="blue") 
+curve(loss.ftn(4,x),add=T,col="green") 
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #경험적위험함수
+
+
+#lasso
+loss.ftn = function(x,mu){
+  lambda = 10
+  fx = (x-mu)^2 + lambda*abs(mu)
+  return(fx)
+}
+
+curve(loss.ftn(1,x),xlim=c(-5,10)) 
+curve(loss.ftn(3,x),add=T,col="blue") 
+curve(loss.ftn(4,x),add=T,col="green") 
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #경험적위험함수
+
+
+
+#square loss risk
+risk.ftn = function(x.vec,mu){
+  fx = mean((x.vec-mu)^2)
+  return(fx)
+}
+
+x.vec = c(1,3,4)
+mu.vec = c(0,1)
+y.vec = c()
+for(i in 1:length(mu.vec)){
+  y.vec = c(y.vec,risk.ftn(x.vec,mu.vec[i]))
+}
+
+y.vec <- sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+
+opt = which.min(y.vec)
+mu.vec[opt]
+
+
+
+
+###실제데이터로 해보기 (mtcars)
+
+#grid search
+x = mtcars$mpg
+a = min(x); b= max(x);eps = 1e-5
+m = round((b-a)/eps)
+mu.vec = seq(a,b,length.out=(m+1))
+y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+opt = which.min(y.vec)
+mu.grid =mu.vec[opt]
+plot(mu.vec,y.vec,type="l")
+abline(v=mu.grid,col="blue")
+mu.exact =mean(x)
+c(mu.grid,mu.exact)
+
+
+#interative search
+risk.ftn = function(x.vec,mu){
+  fx = mean((x.vec-mu)^2)
+  return(fx)
+}
+x = mtcars$mpg
+a = min(x); b= max(x)
+eps = 1e-5
+m=5
+max.iter = 1000
+mu.trace = c()
+for(i in 1:max.iter){
+  mu.vec = seq(a,b,length.out=(m+1))
+  y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+  opt = which.min(y.vec)
+  mu.iter = mu.vec[opt]
+  mu.trace = c(mu.trace,mu.iter)
+  a = mu.vec[max(1,opt-1)]; b = mu.vec[min(m+1,opt+1)]
+  if(b-a<eps) break
+}
+mu.iter
+plot(mu.trace,type="b")
+
+
