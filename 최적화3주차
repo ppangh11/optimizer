@@ -5,14 +5,14 @@ loss.ftn = function(x,mu){
 }
 
 loss.ftn(1,0)
-loss.ftn(c(1,3,4),0) #¿©·¯ x°ªµµ °¡´É
-loss.ftn(1,c(0,1)) #¿©·¯ mu°ªµµ °¡´É
-loss.ftn(c(1,3,4),c(0,1)) #°á°ú°ªÀ» º¸°í È®ÀÎ ÀßÇØ¾ßÇÔ.
+loss.ftn(c(1,3,4),0) #ì—¬ëŸ¬ xê°’ë„ ê°€ëŠ¥
+loss.ftn(1,c(0,1)) #ì—¬ëŸ¬ muê°’ë„ ê°€ëŠ¥
+loss.ftn(c(1,3,4),c(0,1)) #ê²°ê³¼ê°’ì„ ë³´ê³  í™•ì¸ ì˜í•´ì•¼í•¨.
 
-curve(loss.ftn(1,x),xlim=c(-5,10)) #(1-mu)^2ÀÇ ±×·¡ÇÁ
+curve(loss.ftn(1,x),xlim=c(-5,10)) #(1-mu)^2ì˜ ê·¸ë˜í”„
 curve(loss.ftn(3,x),add=T,col="blue") 
 curve(loss.ftn(4,x),add=T,col="green") 
-curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #°æÇèÀûÀ§ÇèÇÔ¼ö
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #ê²½í—˜ì ìœ„í—˜í•¨ìˆ˜
 
 
 #absolute loss
@@ -24,7 +24,7 @@ loss.ftn = function(x,mu){
 curve(loss.ftn(1,x),xlim=c(-5,10)) 
 curve(loss.ftn(3,x),add=T,col="blue") 
 curve(loss.ftn(4,x),add=T,col="green") 
-curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #°æÇèÀûÀ§ÇèÇÔ¼ö
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #ê²½í—˜ì ìœ„í—˜í•¨ìˆ˜
 
 
 #quantile loss
@@ -37,7 +37,7 @@ loss.ftn = function(x,mu){
 curve(loss.ftn(1,x),xlim=c(-5,10)) 
 curve(loss.ftn(3,x),add=T,col="blue") 
 curve(loss.ftn(4,x),add=T,col="green") 
-curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #°æÇèÀûÀ§ÇèÇÔ¼ö
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #ê²½í—˜ì ìœ„í—˜í•¨ìˆ˜
 
 
 
@@ -51,7 +51,7 @@ loss.ftn = function(x,mu){
 curve(loss.ftn(1,x),xlim=c(-5,10)) 
 curve(loss.ftn(3,x),add=T,col="blue") 
 curve(loss.ftn(4,x),add=T,col="green") 
-curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #°æÇèÀûÀ§ÇèÇÔ¼ö
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #ê²½í—˜ì ìœ„í—˜í•¨ìˆ˜
 
 
 #lasso
@@ -64,7 +64,7 @@ loss.ftn = function(x,mu){
 curve(loss.ftn(1,x),xlim=c(-5,10)) 
 curve(loss.ftn(3,x),add=T,col="blue") 
 curve(loss.ftn(4,x),add=T,col="green") 
-curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #°æÇèÀûÀ§ÇèÇÔ¼ö
+curve((loss.ftn(1,x)+loss.ftn(3,x)+loss.ftn(4,x))/3,add=T,col="red") #ê²½í—˜ì ìœ„í—˜í•¨ìˆ˜
 
 
 
@@ -89,7 +89,7 @@ mu.vec[opt]
 
 
 
-###½ÇÁ¦µ¥ÀÌÅÍ·Î ÇØº¸±â (mtcars)
+###ì‹¤ì œë°ì´í„°ë¡œ í•´ë³´ê¸° (mtcars)
 
 #grid search
 x = mtcars$mpg
