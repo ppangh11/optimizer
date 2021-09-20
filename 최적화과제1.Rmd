@@ -1,0 +1,181 @@
+---
+title: "Optimization#1"
+author: "Park Ha Rim"
+date: '2021 9 20 '
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#1. absolute loss
+```{r cars}
+# create loss fuction
+risk.ftn = function(x.vec,mu){
+  fx = mean(abs(x-mu))
+  return(fx)
+}
+
+# grid search
+x = mtcars$mpg
+a = min(x); b= max(x);eps = 1e-5
+m = round((b-a)/eps)
+mu.vec = seq(a,b,length.out=(m+1))
+y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+opt = which.min(y.vec)
+mu.grid =mu.vec[opt]
+
+# iter search
+x = mtcars$mpg
+a = min(x); b= max(x)
+eps = 1e-5
+m=5
+max.iter = 1000
+mu.trace = c()
+for(i in 1:max.iter){
+  mu.vec = seq(a,b,length.out=(m+1))
+  y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+  opt = which.min(y.vec)
+  mu.iter = mu.vec[opt]
+  a = mu.vec[max(1,opt-1)]; b = mu.vec[min(m+1,opt+1)]
+  if(b-a<eps) break
+}
+
+result_abs <- c(mu.grid, mu.iter)
+names(result_abs) <- c("abs.grid","abs.iter")
+result_abs
+```
+
+#2. quantile loss , gamma = 0.5
+```{r}
+# create loss fuction
+risk.ftn = function(x.vec,mu){
+  gamma = 0.8
+  fx = mean((1-gamma)*abs(x-mu)*(x<mu)+gamma*(x-mu)*(x>mu))
+  return(fx)
+}
+
+# grid search
+x = mtcars$mpg
+a = min(x); b= max(x);eps = 1e-5
+m = round((b-a)/eps)
+mu.vec = seq(a,b,length.out=(m+1))
+y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+opt = which.min(y.vec)
+mu.grid =mu.vec[opt]
+
+# iter search
+x = mtcars$mpg
+a = min(x); b= max(x)
+eps = 1e-5
+m=5
+max.iter = 1000
+mu.trace = c()
+for(i in 1:max.iter){
+  mu.vec = seq(a,b,length.out=(m+1))
+  y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+  opt = which.min(y.vec)
+  mu.iter = mu.vec[opt]
+  a = mu.vec[max(1,opt-1)]; b = mu.vec[min(m+1,opt+1)]
+  if(b-a<eps) break
+}
+
+result_quan <- c(mu.grid, mu.iter)
+names(result_quan) <- c("quan.grid","quan.iter")
+result_quan
+```
+
+#3. Huber loss , delta = 0.1
+```{r}
+# create loss fuction
+risk.ftn = function(x.vec,mu){
+  delta = 0.1
+  fx = mean((x-mu)^2*(abs(x-mu)<=delta) + (2*delta*abs(x-mu)-delta^2)*(abs(x-mu)>delta))
+  return(fx)
+}
+
+# grid search
+x = mtcars$mpg
+a = min(x); b= max(x);eps = 1e-5
+m = round((b-a)/eps)
+mu.vec = seq(a,b,length.out=(m+1))
+y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+opt = which.min(y.vec)
+mu.grid =mu.vec[opt]
+
+# iter search
+x = mtcars$mpg
+a = min(x); b= max(x)
+eps = 1e-5
+m=5
+max.iter = 1000
+mu.trace = c()
+for(i in 1:max.iter){
+  mu.vec = seq(a,b,length.out=(m+1))
+  y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+  opt = which.min(y.vec)
+  mu.iter = mu.vec[opt]
+  a = mu.vec[max(1,opt-1)]; b = mu.vec[min(m+1,opt+1)]
+  if(b-a<eps) break
+}
+
+result_huber <- c(mu.grid, mu.iter)
+names(result_huber) <- c("huber.grid","huber.iter")
+result_huber
+```
+
+
+#4. LASSO , lambda = 1
+```{r}
+# create loss fuction
+risk.ftn = function(x.vec,mu){
+  lambda = 0.1
+  fx = mean((x-mu)^2 + lambda*abs(mu))
+  return(fx)
+}
+
+# grid search
+x = mtcars$mpg
+a = min(x); b= max(x);eps = 1e-5
+m = round((b-a)/eps)
+mu.vec = seq(a,b,length.out=(m+1))
+y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+opt = which.min(y.vec)
+mu.grid =mu.vec[opt]
+
+# iter search
+x = mtcars$mpg
+a = min(x); b= max(x)
+eps = 1e-5
+m=5
+max.iter = 1000
+mu.trace = c()
+for(i in 1:max.iter){
+  mu.vec = seq(a,b,length.out=(m+1))
+  y.vec = sapply(X=mu.vec,FUN=risk.ftn,x.vec=x)
+  opt = which.min(y.vec)
+  mu.iter = mu.vec[opt]
+  a = mu.vec[max(1,opt-1)]; b = mu.vec[min(m+1,opt+1)]
+  if(b-a<eps) break
+}
+
+result_lambda <- c(mu.grid, mu.iter)
+names(result_lambda) <- c("lambda.grid","lambda.iter")
+result_lambda
+
+result = c(result_abs,result_quan,result_huber,result_lambda)
+result
+
+hist(x) # histogram
+abline(v=result[1],col="blue") #absolute loss
+abline(v=result[3],col="red") #quantile loss
+abline(v=result[5],col="green") #huber loss
+abline(v=result[7],col="black") #lasso
+abline(v=20.09062,col="pink") #square loss
+```
+
+
