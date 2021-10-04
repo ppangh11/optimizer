@@ -1,0 +1,95 @@
+---
+title: "Optimization#2"
+author: "Park Ha Rim"
+date: '2021 10 4 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#1-1 Huber loss (delta = 2)
+```{r}
+#create huber loss function
+huber.ftn = function(x,mu,delta=2){
+  fx = mean((x-mu)^2*(abs(x-mu)<delta)+(2*delta*abs(x-mu)-delta^2)*(abs(x-mu)>delta))
+  gx = mean(-2*(x-mu)*(abs(x-mu)<=delta)+2*delta*sign(x-mu)*(abs(x-mu)>delta))
+  return(list(loss=fx,grad=gx))
+}
+
+mpg = mtcars$mpg
+a = min(mpg)
+b = max(mpg)
+eps = 1e-7
+iter.max = 1000
+
+
+huber.bi <- c()
+for(i in 1:iter.max){
+  mid = (a+b)/2
+  huber.bi = c(huber.bi,mid)
+  if(huber.ftn(mpg,mid)$grad*huber.ftn(mpg,a)$grad>0){
+    a = mid
+    b = b
+  } else{
+    a = a
+    b = mid
+  }
+  if(b-a<eps) break
+}
+
+huber.bi
+```
+
+#1-2 huber.bi Path plot
+```{r}
+hist(mpg)
+for(i in 1:length(huber.bi)){
+  abline(v=huber.bi[i])
+  if(huber.bi[i]==huber.bi[length(huber.bi)]){
+    abline(v=huber.bi[i],col="red")
+  }
+}
+#red line is optimum value
+```
+
+#2-1.quantile loss function(Uniform)
+```{r}
+quan.ftn = function(alp,x1,x2,eps=1e-7,iter.max=1000){
+  a = x1
+  b = x2
+  q.trace = c()
+  for(i in 1:iter.max){
+    mid = (a+b)/2
+    q.trace = mid
+    if((punif(mid,min=x1,max=x2)-alp)*(punif(a,min=x1,max=x2)-alp)>0){
+      a = mid
+      b = b
+    }else {
+      a = a
+      b = mid
+    }
+    if(b-a<eps) break
+  }
+  return(q.trace)
+}
+
+quan = c()
+for(i in seq(0.1,0.9,0.1)){
+  quan = c(quan,quan.ftn(i,-3,3))
+}
+quan
+```
+#2-2 quantile function plot(Uniform)
+```{r}
+x = seq(-4,4,length=100)
+y = dunif(x,min=-3,max=3)
+plot(x,y,type='l')
+for(i in 1:length(quan)){
+  abline(v=quan[i])
+}
+```
+
+
